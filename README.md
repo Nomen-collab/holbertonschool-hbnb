@@ -80,18 +80,18 @@ Compilation of technical documentation gathering all the diagrams and notes crea
 ## Project Structure
 
 ```
-holbertonschool-hbnb/
-├── part1/                          # Part 1: UML Documentation
-│   ├── README.md                   # This file
-│   ├── diagrams/
-│   │   ├── package-diagram.md      # High-level architecture diagram
-│   │   ├── class-diagram.md        # Business logic class diagram
-│   │   └── sequence-diagrams.md    # API interaction diagrams
-│   └── documentation/
-│       └── technical-doc.pdf       # Compiled technical documentation
-```
+holbertonschool-hbnb part1 UML Documentation
+README.md               # This file
 
-### Current Deliverables (Part 1)
+--------------diagrams--------------
+
+
+package-diagram.md      # High-level architecture diagram
+class-diagram.md        # Business logic class diagram
+sequence-diagrams.md    # API interaction diagrams
+documentation           # Compiled technical documentation
+
+
 - **Package Diagram**: 3-layer architecture with Facade pattern
 - **Class Diagram**: Detailed Business Logic layer (User, Place, Review, Amenity)
 - **Sequence Diagrams**: 4 API call flows
@@ -146,20 +146,6 @@ This project is developed collaboratively by:
 
 ---
 
-## Getting Started
-
-### Prerequisites
-- Basic understanding of UML notation
-- Familiarity with software architecture concepts
-- Access to Mermaid.js or draw.io for diagram viewing/editing
-
-### Viewing the Documentation
-1. Navigate to `part1/diagrams/` for individual UML diagrams
-2. Check `part1/documentation/` for the complete technical document
-3. Review this README for project overview and context
-
----
-
 ## License
 
 This project is part of the Holberton School Software Engineering curriculum.
@@ -170,11 +156,3 @@ This project is part of the Holberton School Software Engineering curriculum.
 
 ---
 
-```
- _   _ ____        ____         _   _ __  __ _     
-| | | | __ ) _ __ | __ )       | | | |  \/  | |    
-| |_| |  _ \| '_ \|  _ \ _____ | | | | |\/| | |    
-|  _  | |_) | | | | |_) |_____|| |_| | |  | | |___ 
-|_| |_|____/|_| |_|____/        \___/|_|  |_|_____|
-                   --
-```
