@@ -1,15 +1,6 @@
---
- _   _ ____        ____         _   _ __  __ _     
-| | | | __ ) _ __ | __ )       | | | |  \/  | |    
-| |_| |  _ \| '_ \|  _ \ _____ | | | | |\/| | |    
-|  _  | |_) | | | | |_) |_____|| |_| | |  | | |___ 
-|_| |_|____/|_| |_|____/        \___/|_|  |_|_____|
-                   --
-```
+HBnB Evolution - UML Documentation
 
-# HBnB Evolution - UML Documentation
-
-## Project Overview
+#Project Overview
 The goal of this project is to create comprehensive technical documentation which will serve as the foundation of our HBnB Evolution application.
 
 **Current Phase:** Part 1 - Technical Documentation & UML Design
@@ -18,7 +9,7 @@ The goal of this project is to create comprehensive technical documentation whic
 
 ---
 
-## Problem Statement
+#Problem Statement
 
 In this project we are tasked with documenting the architecture and design of a simplified version of **HBnB Evolution**.
 
@@ -31,17 +22,17 @@ The users will be allowed to perform the following operations:
 
 ---
 
-## Project Requirements
+#Project Requirements
 
 This project is divided into **4 main steps**:
 
-### Step 1: Architecture Layers
+#Step 1: Architecture Layers
 Represent the architecture layers allowing the different components of the application to interact together through a **3-layer architecture**:
 - **Presentation Layer**: API endpoints and services
 - **Business Logic Layer**: Core models and business rules
 - **Persistence Layer**: Database access and data management
 
-### Step 2: Detailed Class Diagram for Business Logic Layer
+#Step 2: Detailed Class Diagram for Business Logic Layer
 Create and represent with a diagram the following objects of the business logic:
 
 **User Entity**
@@ -65,21 +56,21 @@ Create and represent with a diagram the following objects of the business logic:
 
 **Note:** Each object should be uniquely identified by an ID. For audit reasons, the creation and update datetime should be registered for all entities.
 
-### Step 3: Sequence Diagrams for API Calls
+#Step 3: Sequence Diagrams for API Calls
 Creation of 4 sequence diagrams for the following API calls:
 - User registration
 - Place creation
 - Review submission
 - Fetching a list of places
 
-### Step 4: Documentation
+#Step 4: Documentation
 Compilation of technical documentation gathering all the diagrams and notes created.
 
 ---
 
-## Project Structure
+#Project Structure
 
-```
+
 holbertonschool-hbnb part1 UML Documentation
 README.md               # This file
 
@@ -99,15 +90,15 @@ documentation           # Compiled technical documentation
 
 ---
 
-## Resources and Tools
+#Resources and Tools
 
-### Primary Tools Used
+#Primary Tools Used
 - **[Mermaid.js](https://mermaid.js.org/)** - Diagram creation and visualization
   - Used for all UML diagrams (Package, Class, Sequence)
   - Code-based diagram generation
   - Integration with GitHub/GitLab
 
-### UML Documentation and Learning Resources
+#UML Documentation and Learning Resources
 
 **UML Basics:**
 - [OOP - Introduction to UML](https://example.com) - Fundamental UML concepts
@@ -124,21 +115,21 @@ documentation           # Compiled technical documentation
 - [UML Sequence Diagram Tutorial](https://example.com)
 - [Understanding Sequence Diagrams](https://example.com)
 
-### Alternative Tools
+#Alternative Tools
 - **[draw.io](https://app.diagrams.net/)** - Visual diagram editor
 - **[Mermaid Live Editor](https://mermaid.live/)** - Online Mermaid testing and visualization
 
 ---
 
-## Team and Contribution
+#Team and Contribution
 
-### Team Members
+#Team Members
 This project is developed collaboratively by:
 - **Dirimo IRIARTE PEREZ**
 - **Nomen RATSIMBA**
 - **Patrice BOLIN**
 
-### Work Distribution
+#Work Distribution
 - **Architecture Design**: Collaborative planning of 3-layer structure
 - **UML Diagrams**: Shared creation using Mermaid.js
 - **Documentation**: Collective technical writing and review
@@ -146,7 +137,7 @@ This project is developed collaboratively by:
 
 ---
 
-## License
+#License
 
 This project is part of the Holberton School Software Engineering curriculum.
 
