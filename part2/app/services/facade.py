@@ -1,5 +1,5 @@
 from app.persistence.repository import InMemoryRepository
-from app.models.user import user
+from app.models.user import User
 class HBnBFacade:
     def __init__(self):
         self.user_repo = InMemoryRepository()
@@ -9,9 +9,9 @@ class HBnBFacade:
 
     # Placeholder method for creating a user
     def create_user(self, user_data):
-    user = User(**user_data)
-    self.user_repo.add(user)
-    return user
+        user = User(**user_data)
+        self.user_repo.add(user)
+        return user
 
     def get_user(self, user_id):
         return self.user_repo.get(user_id)
