@@ -48,4 +48,4 @@ class AmenityResource(Resource):
             return {"error": "Amenity not found"}, 404
         face.update_amenity(amenity_id, amenity_data)
         updated_amenity = facade.get_amenity(amenity_id)
-        return {"id": update_amenity.id, "name": updated_amenity.name}, 200
+        return {"id": updated_amenity.id, "name": updated_amenity.name}, 200
