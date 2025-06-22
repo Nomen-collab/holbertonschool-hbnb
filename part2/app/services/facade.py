@@ -86,7 +86,6 @@ class HBnBFacade:
         if not place:
             return None
         place.update(place_data)
-        self.place_repo.update(place, place_data)
         return place
 
     # Review endpoints
@@ -115,10 +114,8 @@ class HBnBFacade:
         if not review:
             return None
         review.update(review_data)
-        self.review_repo.update(review, review_data)
         return review
 
     def delete_review(self, review_id):
         """Delete a review by ID."""
         return self.review_repo.delete(review_id)
-
