@@ -29,7 +29,7 @@ class User(BaseModel):
         }
 
     def update(self, data):
-    """Update user attributes"""
+        """Update user attributes"""
         for key, value in data.items():
             if hasattr(self, key):
                 setattr(self, key, value)
