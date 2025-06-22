@@ -220,7 +220,10 @@ We will review your Pull Request as soon as possible. Thank you in advance for y
 
 ## License
 
-This projet is part of the Holberton School Software Engineering curriculum.
-Repository: holbertonschool-hbnb
-Projet: HBnB Evolution - Part 2 (BL and API)
-School: Holberton School
+This project is part of the Holberton School Software Engineering curriculum.
+
+**Repository:** [holbertonschool-hbnb](https://github.com/Dirimo/holbertonschool-hbnb)
+**Project:** HBnB Evolution - Part 2 (BL and API)
+**School:** Holberton School
+
+---
