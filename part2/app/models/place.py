@@ -1,7 +1,7 @@
-ifrom app.models.base_model import BaseModel
+from app.models.base_model import BaseModel
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, description, price, latitude, longitude, owner, amenities=None, reviews=None):
         super().__init__()
 
 # Validation title (required, max 100 chars)
@@ -60,7 +60,7 @@ class Place(BaseModel):
         }
 
 
-def update(self, data):
+    def update(self, data):
         """Update place attributes with validation"""
         for key, value in data.items():
             if key == 'title' and (not value or len(value) > 100):
