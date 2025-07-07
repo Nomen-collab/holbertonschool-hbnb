@@ -1,38 +1,48 @@
-from sqlalchemy import Column, String, Text, Integer, ForeignKey
-from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
 
 class Review(BaseModel):
-    """Review model with SQLAlchemy mapping"""
-    
-    __tablename__ = 'reviews'
-    
-    text = Column(Text, nullable=False)
-    rating = Column(Integer, nullable=False)
-    user_id = Column(String(36), ForeignKey('users.id'), nullable=False)
-    place_id = Column(String(36), ForeignKey('places.id'), nullable=False)
-    
-    # Relations
-    user = relationship("User", back_populates="reviews")
-    place = relationship("Place", back_populates="reviews")
-    
-    def __init__(self, text, rating, user_id, place_id):
+    def __init__(self, text, rating, place, user):
         super().__init__()
-        self.text = text
-        self.rating = rating
-        self.user_id = user_id
-        self.place_id = place_id
-    
+        
+        # Validation text (required)
+        if not text or not text.strip():
+            raise ValueError("Text is required")
+        
+        # Validation rating (1 to 5)
+        if rating is None or rating < 1 or rating > 5:
+            raise ValueError("Rating must be between 1 and 5")
+        
+        # Validation place (required)
+        if not place:
+            raise ValueError("Place is required")
+        
+        # Validation user (required)
+        if not user:
+            raise ValueError("User is required")
+        
+        self.text = text.strip()
+        self.rating = int(rating)
+        self.place = place
+        self.user = user
+
     def to_dict(self):
-        """Convert to dictionary"""
-        data = super().to_dict()
-        data.update({
+        return {
+            'id': self.id,
             'text': self.text,
             'rating': self.rating,
-            'user_id': self.user_id,
-            'place_id': self.place_id
-        })
-        return data
-    
-    def __repr__(self):
-        return f'<Review {self.id}>'
+            'place': self.place.to_dict() if self.place else None,
+            'user': self.user.to_dict() if self.user else None,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
+
+    def update(self, data):
+        """Update review attributes with validation"""
+        for key, value in data.items():
+            if key == 'text' and (not value or not value.strip()):
+                raise ValueError("Text is required")
+            elif key == 'rating' and (value < 1 or value > 5):
+                raise ValueError("Rating must be between 1 and 5")
+            elif hasattr(self, key) and key != 'id':
+                setattr(self, key, value)
+        self.save()
