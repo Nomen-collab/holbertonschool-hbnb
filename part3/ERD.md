@@ -1,56 +1,68 @@
 ```mermaid
 erDiagram
-    users ||--o{ places : "has"
-    users ||--o{ reviews : "writes"
-    places ||--o{ reviews : "has"
-    places }o--o{ amenities : "has"
-
-    users {
-        VARCHAR(36) id PK
-        DATETIME created_at
-        DATETIME updated_at
-        VARCHAR(50) first_name
-        VARCHAR(50) last_name
-        VARCHAR(120) email UNIQUE
-        VARCHAR(128) _password
-        BOOLEAN is_admin
+    USERS {
+        varchar(36) id PK "UUID"
+        varchar(120) email UK "Unique email"
+        varchar(255) password_hash "Hashed password"
+        varchar(50) first_name "First name"
+        varchar(50) last_name "Last name"
+        boolean is_admin "Admin role flag"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
     }
-
-    places {
-        VARCHAR(36) id PK
-        DATETIME created_at
-        DATETIME updated_at
-        VARCHAR(100) title
-        TEXT description
-        INTEGER price_per_night
-        FLOAT latitude
-        FLOAT longitude
-        VARCHAR(255) address
-        VARCHAR(100) city
-        INTEGER number_rooms
-        INTEGER number_bathrooms
-        INTEGER max_guests
-        VARCHAR(36) user_id FK "owner"
+   
+    PLACES {
+        varchar(36) id PK "UUID"
+        varchar(100) title "Place title"
+        text description "Place description"
+        decimal(10,2) price "Price per night"
+        float latitude "GPS latitude"
+        float longitude "GPS longitude"
+        varchar(36) owner_id FK "Owner reference"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
     }
-
-    reviews {
-        VARCHAR(36) id PK
-        DATETIME created_at
-        DATETIME updated_at
-        TEXT text
-        INTEGER rating
-        VARCHAR(36) user_id FK "reviewer"
-        VARCHAR(36) place_id FK "on_place"
+   
+    REVIEWS {
+        varchar(36) id PK "UUID"
+        text text "Review content"
+        integer rating "Rating 1-5"
+        varchar(36) user_id FK "User reference"
+        varchar(36) place_id FK "Place reference"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
     }
-
-    amenities {
-        VARCHAR(36) id PK
-        DATETIME created_at
-        DATETIME updated_at
-        VARCHAR(100) name UNIQUE
+   
+    AMENITIES {
+        varchar(36) id PK "UUID"
+        varchar(50) name UK "Amenity name"
+        text description "Amenity description"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
     }
-
-    place_amenities {
-        VARCHAR(36) place_id PK,FK
-        VARCHAR(36) amenity_id PK,FK
+   
+    PLACE_AMENITIES {
+        varchar(36) place_id PK,FK "Place reference"
+        varchar(36) amenity_id PK,FK "Amenity reference"
     }
+   
+    %% Relations
+    USERS ||--o{ PLACES : "owns (1:N)"
+    USERS ||--o{ REVIEWS : "writes (1:N)"
+    PLACES ||--o{ REVIEWS : "has (1:N)"
+    PLACES ||--o{ PLACE_AMENITIES : "has (1:N)"
+    AMENITIES ||--o{ PLACE_AMENITIES : "belongs_to (1:N)"
+   
+    %% Constraints
+    USERS {
+        constraint email_unique "UNIQUE(email)"
+        constraint email_not_null "NOT NULL(email)"
+        constraint password_not_null "NOT NULL(password_hash)"
+        index idx_email "INDEX(email)"
+    }
+   
+    PLACES {
+        constraint owner_fk "FOREIGN KEY(owner_id) REFERENCES users(id)"
+        constraint price_positive "CHECK(price > 0)"
+        index idx_owner "INDEX(owner_id)"
+        index idx_location "INDEX(latitude
