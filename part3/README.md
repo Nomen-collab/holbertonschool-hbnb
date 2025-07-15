@@ -1,229 +1,209 @@
-# HBnB - BL and API (Part 2)
+# HBNB - Part 3: Authentication & Database
 
-This repository contains the second part of the HBnB Evolution project, focusing on the development of the Business Logic (BL) and the implementation of a robust RESTful API. This project aims to simulate a vacation rental platform, similar to Airbnb, by providing a programmable interface for managing users, places, reviews, and amenities.
+This repository contains the third part of the HBNB project, focusing on implementing **user management**, **authentication**, and **relational database integration** using SQLAlchemy.
 
-## Project Objectives (Part 2)
+-----
 
-This part of the project aims to:
+## 🚀 Implemented Features
 
-  * Establish a complete RESTful API allowing interaction with the HBnB platform's data.
-  * Implement the business logic to manage the different entities (Users, Places, Reviews, Amenities).
-  * Ensure data persistence through a database.
-  * Provide a clear and modular architecture for easy maintenance and scalability.
+  * **User Management:** Create, Read, Update, and Delete (CRUD) operations for users.
+  * **Robust Authentication:**
+      * Password hashing (via **Flask-Bcrypt**) for enhanced security.
+      * JWT (JSON Web Tokens) authentication via **Flask-JWT-Extended**.
+      * Role management (e.g., `is_admin`).
+  * **Database Integration:** Utilizes **Flask-SQLAlchemy** as an ORM (Object-Relational Mapper) to interact with a relational database.
+      * Automatic table creation based on Python models (`db.create_all()`).
+  * **Data Models:** Definition of models for `User`, `Place`, `Review`, `Amenity`, and an `Place_Amenity` association table for many-to-many relationships.
+  * **RESTful API:** Exposure of API endpoints to interact with user, place, review, and amenity data.
 
-## Key API Features
+-----
 
-The HBnB Evolution API offers the following main functionalities:
+## 🛠️ Technologies Used
 
-  * **User Management:**
-      * Registration of new users.
-      * User authentication.
-      * Retrieval, update, and deletion of user information.
-  * **Place Management:**
-      * Creation of new place listings.
-      * Searching and retrieving places with filtering criteria.
-      * Updating and deleting existing place listings.
-  * **Review Management:**
-      * Adding reviews for places.
-      * Retrieval and deletion of reviews.
-  * **Amenity Management:**
-      * Creation, retrieval, update, and deletion of available amenities.
+  * **Python 3.x**
+  * **Flask:** Web micro-framework.
+  * **Flask-RESTX:** Extension for building RESTful APIs with Flask.
+  * **Flask-Bcrypt:** For secure password hashing.
+  * **Flask-JWT-Extended:** For JWT-based authentication implementation.
+  * **Flask-SQLAlchemy:** Integration of SQLAlchemy (ORM) with Flask.
+  * **SQLAlchemy:** ORM for database interaction.
+  * **SQLite:** Lightweight database used for development.
+  * **PyMySQL / Psycopg2:** (Optional) Connectors for other databases like MySQL/PostgreSQL if used.
 
-## Architecture
+-----
 
-The project is structured around a multi-layered architecture, ensuring a clear separation of responsibilities:
-
-  * **Presentation Layer:** Handles API endpoints (`api/v1/`) and interaction with HTTP requests and responses.
-  * **Business Logic Layer:** Contains data models (`models/`) and associated business logic for each entity (User, Place, Review, Amenity).
-  * **Persistence Layer:** Interacts with the database (`persistence/`) to store and retrieve data.
-
-## Class Diagram
-
-The class diagram below illustrates the relationships between the different entities in the system, their attributes, and key methods.
-
-## Sequence Diagrams of Key Operations
-
-These diagrams illustrate the flow of information and interactions between the different layers of the system for specific API operations.
-
-### User Registration
-
-### Place Creation
-
-### Retrieving Places
-
-### Review Creation
-
-## Project Structure
+## 📂 Project Structure (Relevant Part)
 
 ```
-.
-├── App/
-│   ├── api/
-│   │   └── v1/
-│   │       ├── amenities.py
-│   │       ├── places.py
-│   │       ├── reviews.py
-│   │       └── users.py
-│   ├── models/
-│   │   ├── amenity.py
+hbnb_app/
+├── app/
+│   ├── __init__.py           # Flask app and SQLAlchemy initialization
+│   ├── models/               # Data model definitions (User, Place, etc.)
+│   │   ├── __init__.py
 │   │   ├── base_model.py
+│   │   ├── user.py
 │   │   ├── place.py
 │   │   ├── review.py
-│   │   └── user.py
-│   ├── persistence/
-│   │   └── repository.py
-│   ├── services/
-│   └── tests/
-├── config.py
-├── requirements.txt
-└── run.py
+││   └── amenity.py
+│   └── routes/               # RESTful API route definitions
+│       ├── __init__.py
+│       └── ... (your route files for each resource)
+├── config.py                 # Configuration file (DB URI, secret keys, etc.)
+├── run.py                    # Script to run the Flask application
+├── requirements.txt          # List of Python dependencies
+├── venv/                     # Virtual environment
+└── hbnb_dev.db               # (Generated) SQLite database file
 ```
 
-## Technologies Used
+-----
 
-  * **Python**
-  * **Flask**: Micro-framework for building the API.
-  * **Flask-RESTful**: Flask extension facilitating the creation of REST APIs.
-  * **SQLAlchemy**: ORM (Object-Relational Mapper) for database interaction.
-  * **mysql-connector-python**: Python connector for MySQL.
-  * **python-dotenv**: For managing environment variables.
-  * **jsonschema**: For validating API input data.
+## ⚙️ Local Setup and Installation
 
-## Installation
-
-Follow these steps to set up the project locally:
+Follow these steps to get the project running on your local machine:
 
 1.  **Clone the repository:**
 
     ```bash
-    git clone [YOUR_FRIEND'S_REPO_URL]
-    cd hbnb-bl-api/part2 # Or the path to the part2 folder if cloning into a parent directory
+    git clone <YOUR_GITHUB_REPO_URL>
+    cd hbnb_app
     ```
 
-2.  **Create and activate a Python virtual environment:**
+2.  **Create and activate a virtual environment:**
+    It is highly recommended to use a virtual environment to manage project dependencies.
 
     ```bash
-    python3 -m venv myenv # Or your chosen name
-    source myenv/bin/activate # On Linux/macOS
-    # or myenv\Scripts\activate # On Windows
+    python3 -m venv venv
+    # For Linux/macOS:
+    source venv/bin/activate
+    # For Windows (CMD):
+    # venv\Scripts\activate
+    # For Windows (PowerShell):
+    # .\venv\Scripts\Activate.ps1
     ```
 
-3.  **Install dependencies:**
-    Install all required libraries listed in `requirements.txt`.
+3.  **Install Python dependencies:**
 
     ```bash
     pip install -r requirements.txt
+    # If requirements.txt does not exist yet, install them manually:
+    # pip install Flask Flask-RESTX Flask-Bcrypt Flask-JWT-Extended Flask-SQLAlchemy pymysql
     ```
 
-      * **Specific Dependencies:**
-          * `Flask==3.0.3`
-          * `Flask-RESTful==0.3.9`
-          * `SQLAlchemy==2.0.29`
-          * `mysql-connector-python==8.4.0`
-          * `python-dotenv==1.0.1`
-          * `Werkzeug==3.1.3`
-          * `itsdangerous==2.2.0`
-          * `Jinja2==3.1.4`
-          * `MarkupSafe==2.1.5`
-          * `click==8.1.7`
-          * `packaging==24.0`
-          * `rpds-py==0.18.0`
-          * `typing_extensions==4.12.2`
-          * `jsonschema==4.22.0`
-          * `jsonschema-specifications==2023.12.1`
-          * `referencing==0.35.0`
-          * `attrs==23.2.0`
-          * `rpds==0.18.0`
-          * `blinker==1.8`
-          * `aniso8601==10.0.0`
-          * `pytz==2024.1`
+4.  **Configure environment variables:**
+    These variables are crucial for the application's operation. You can set them temporarily in your terminal or use a `.env` file if your project is configured to read it.
 
-4.  **Database and Application Configuration:**
+      * **For Linux/macOS:**
+        ```bash
+        export FLASK_APP=app
+        export FLASK_ENV=development # Activates Flask's development mode
+        export DATABASE_URL="sqlite:///hbnb_dev.db" # Or your MySQL/PostgreSQL connection string
+        export SECRET_KEY="a_very_complex_and_unique_secret_key" # Replace with a real key!
+        export JWT_SECRET_KEY="an_equally_secret_and_unique_jwt_key" # Replace!
+        ```
+      * **For Windows (CMD):**
+        ```cmd
+        set FLASK_APP=app
+        set FLASK_ENV=development
+        set DATABASE_URL="sqlite:///hbnb_dev.db"
+        set SECRET_KEY="a_very_complex_and_unique_secret_key"
+        set JWT_SECRET_KEY="an_equally_secret_and_unique_jwt_key"
+        ```
 
-      * This project uses MySQL. Ensure you have a running MySQL server.
-      * The `config.py` file contains application settings such as `HOST`, `PORT`, and `DEBUG_MODE`. Adjust them as necessary for your environment.
+5.  **Run the Flask application:**
 
-## Usage
-
-To start the API:
-
-1.  **Ensure your virtual environment is activated.**
-2.  **Run the `run.py` script:**
     ```bash
     python run.py
+    # Or if you don't have run.py and have set FLASK_APP:
+    # flask run
     ```
-    This will start the Flask server, and the API will be accessible via the `HOST` and `PORT` defined in `config.py`.
 
-## API Usage Examples
+    On the first run, `db.create_all()` (called in `app/__init__.py`) will automatically create the `hbnb_dev.db` file and all tables defined by your SQLAlchemy models.
 
-Once the API is running, you can use tools like `curl`, Postman, Insomnia, or an HTTP client to interact with the endpoints.
+The application should start and be accessible at `http://127.0.0.1:5000/` (or another port indicated in the terminal).
 
-  * **Example (adapt with actual routes):**
-      * `POST /users`: To register a new user.
-      * `GET /places`: To retrieve a list of places.
-      * `POST /places`: To create a new place.
-      * `POST /reviews`: To add a review to a place.
+-----
 
-## Tests
+## 📊 Database Schema (ER Diagram)
 
-The `tests/` folder contains unit and integration tests to validate the proper functioning of the application and the API.
+The Entity-Relationship Diagram (ERD) below illustrates the structure of the database tables and the relationships between them.
 
-To run the tests:
+```mermaid
+erDiagram
+    USERS {
+        varchar(36) id PK "UUID"
+        varchar(120) email UK "Unique email"
+        varchar(255) password_hash "Hashed password"
+        varchar(50) first_name "First name"
+        varchar(50) last_name "Last name"
+        boolean is_admin "Admin role flag"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
+    }
 
-```bash
-python -m unittest discover tests
+    PLACES {
+        varchar(36) id PK "UUID"
+        varchar(100) title "Place title"
+        text description "Place description"
+        float price "Price per night"
+        float latitude "GPS latitude"
+        float longitude "GPS longitude"
+        varchar(255) address "Street address"
+        varchar(100) city "City"
+        integer number_rooms "Number of rooms"
+        integer number_bathrooms "Number of bathrooms"
+        integer max_guests "Maximum guests"
+        varchar(36) owner_id FK "Owner reference"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
+    }
+
+    REVIEWS {
+        varchar(36) id PK "UUID"
+        text text "Review content"
+        integer rating "Rating 1-5"
+        varchar(36) user_id FK "User reference"
+        varchar(36) place_id FK "Place reference"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
+    }
+
+    AMENITIES {
+        varchar(36) id PK "UUID"
+        varchar(100) name UK "Amenity name"
+        text description "Amenity description"
+        datetime created_at "Creation timestamp"
+        datetime updated_at "Update timestamp"
+    }
+
+    PLACE_AMENITIES {
+        varchar(36) place_id PK,FK "Place reference"
+        varchar(36) amenity_id PK,FK "Amenity reference"
+    }
+
+    %% Relations
+    USERS ||--o{ PLACES : "owns"
+    USERS ||--o{ REVIEWS : "writes"
+    PLACES ||--o{ REVIEWS : "has"
+    PLACES ||--o{ PLACE_AMENITIES : "has"
+    AMENITIES ||--o{ PLACE_AMENITIES : "belongs_to"
 ```
 
-## Contribution
+-----
 
-We welcome contributions to this project\! If you wish to improve or extend the HBnB API, please follow these steps:
+## 🤝 Contribution
 
-1.  **Fork the repository:** Create your own copy of the repository on GitHub.
-2.  **Clone your fork:**
-    ```bash
-    git clone https://github.com/YOUR_GITHUB_USERNAME/hbnb-bl-api.git
-    cd hbnb-bl-api/part2 # Navigate to the project folder
-    ```
-3.  **Create a new branch:** Give your branch a descriptive name for the feature or fix you are implementing.
-    ```bash
-    git checkout -b feature/your-feature-name
-    # or bugfix/your-bug-fix
-    ```
-4.  **Make your changes:** Code your additions or fixes.
-5.  **Run tests:** Ensure all changes work correctly and do not break existing functionalities.
-    ```bash
-    python -m unittest discover tests
-    ```
-6.  **Build and run the application:** Verify that the API starts and behaves as expected with your changes.
-    ```bash
-    python run.py
-    ```
-7.  **Commit your changes:**
-    ```bash
-    git add .
-    git commit -m "feat: Add new feature X"
-    # or "fix: Fix bug Y"
-    ```
-8.  **Push your changes to your fork:**
-    ```bash
-    git push origin feature/your-feature-name
-    ```
-9.  **Open a Pull Request (PR):** Go to your fork's GitHub page and open a Pull Request to the `main` branch of the original repository. Clearly describe the changes you've made and why.
+Contributions are welcome\! If you'd like to improve this project, please follow the standard Git workflow:
 
-We will review your Pull Request as soon as possible. Thank you in advance for your contribution\!
+1.  Fork the repository.
+2.  Create a new branch for your feature (`git checkout -b feature/my-new-feature`).
+3.  Commit your changes (`git commit -m "feat: Add new functionality"`).
+4.  Push your branch (`git push origin feature/my-new-feature`).
+5.  Open a Pull Request.
 
-## Group Members
+-----
 
-  * Dirimo IRIARTE PEREZ
-  * Nomen RATSIMBA
-  * Partrice BOLIN
+## 📄 License
 
-## License
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
-This project is part of the Holberton School Software Engineering curriculum.
-
-**Repository:** [holbertonschool-hbnb](https://github.com/Dirimo/holbertonschool-hbnb)
-**Project:** HBnB Evolution - Part 2 (BL and API)
-**School:** Holberton School
-
----
+-----
