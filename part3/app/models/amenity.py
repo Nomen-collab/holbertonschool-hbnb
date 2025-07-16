@@ -1,25 +1,21 @@
+from app import db
 from app.models.base_model import BaseModel
 
 class Amenity(BaseModel):
-    def __init__(self, name):
-        super().__init__()
-        if len(name) > 50:
-            raise ValueError("name must be 50 characters or less")
-        self.name = name
+    # name of the table in the DB
+    __tablename__ = 'amenities'
+    # name of the amenity
+    name = db.Column(db.String(128), nullable=False, unique=True)
 
+    places = db.relationship('Place', secondary='place_amenities', back_populates='amenities')
+
+    def __repr__(self):
+        return f"<Amenity {self.name}>"
 
     def to_dict(self):
         return {
-            'id': self.id,  # ✅ Ajout des deux-points
+            'id': self.id,
             'name': self.name,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
-
-
-    def update(self, data):
-        """Function to update amenities attributes"""
-        for key, value in data.items():
-            if hasattr(self, key) and key != 'id':  # ✅ Parenthèse corrigée
-                setattr(self, key, value)  # ✅ setattr + value en minuscule
-        self.save()

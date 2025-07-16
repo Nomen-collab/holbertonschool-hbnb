@@ -1,48 +1,25 @@
+from app import db
 from app.models.base_model import BaseModel
 
 class Place(BaseModel):
-    def __init__(self, title, description, price, latitude, longitude, owner, amenities=None, reviews=None):
-        super().__init__()
+    #Name of the table in the DB
+    __tablename__ = 'places'
 
-# Validation title (required, max 100 chars)
-        if not title or len(title) > 100:
-            raise ValueError("Title is required and must be 100 characters or less")
+    # Attributs related to the db's column
+    title = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.String(1024), nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
 
-# Validation price (must be positive)
-        if price is None or price < 0:
-            raise ValueError("Price must be a positive value")
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
-# Validation latitude (-90 to 90)
-        if latitude is None or latitude < -90.0 or latitude > 90.0:
-            raise ValueError("Latitude must be between -90.0 and 90.0")
+    # Relations
+    reviews = db.relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
+    amenities = db.relationship('Amenity', secondary='place_amenities', back_populates='places')
 
-# Validation longitude (-180 to 180)
-        if longitude is None or longitude < -180.0 or longitude > 180.0:
-            raise ValueError("Longitude must be between -180.0 and 180.0")
-
-# Validation owner (required)
-        if not owner:
-            raise ValueError("Owner is required")
-
-        self.title = title
-        self.description = description
-        self.price = price
-        self.latitude = latitude
-        self.longitude = longitude
-        self.owner = owner
-        self.amenities = []
-        self.reviews = []  # Liste pour stocker les reviews
-
-
-    def add_review(self, review):
-        """Add a review to the place."""
-        self.reviews.append(review)
-
-
-    def add_amenity(self, amenity):
-        """Add an amenity to the place."""
-        self.amenities.append(amenity)
-
+    def __repr__(self):
+        return f"<Place {self.title}>"
 
     def to_dict(self):
         return {
@@ -52,25 +29,6 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner': self.owner.to_dict() if self.owner else None,
-            'amenities': [amenity.to_dict() for amenity in self.amenities],
-            'reviews': [review.to_dict() for review in self.reviews],
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
-
-
-    def update(self, data):
-        """Update place attributes with validation"""
-        for key, value in data.items():
-            if key == 'title' and (not value or len(value) > 100):
-                raise ValueError("Title must be 100 characters or less")
-            elif key == 'price' and (value is None or value < 0):
-                raise ValueError("Price must be positive")
-            elif key == 'latitude' and (value < -90.0 or value > 90.0):
-                raise ValueError("Latitude must be between -90.0 and 90.0")
-            elif key == 'longitude' and (value < -180.0 or value > 180.0):
-                raise ValueError("Longitude must be between -180.0 and 180.0")
-            elif hasattr(self, key) and key != 'id':
-                setattr(self, key, value)
-        self.save()

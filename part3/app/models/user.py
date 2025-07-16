@@ -1,23 +1,27 @@
-from app.models.base_model import BaseModel
-
+from app import db
+from app.models.base_model import BaseModel  # Import BaseModel from its module
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, password="", is_admin=False):
-        super().__init__()
+    __tablename__ = 'users'
 
-        if len(first_name) > 50:
-            raise ValueError("first name too long")
-        if len(last_name) > 50:
-            raise ValueError("Last name too long")
-        if "@" not in email:
-            raise ValueError("invalid Email")
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email = email
-        self.password = password
-        self.is_admin = is_admin
+    places = db.relationship('Place', backref='owner', lazy=True, cascade='all, delete-orphan')
+    reviews = db.relationship('Review', backref='user', lazy=True, cascade='all, delete-orphan')
 
+    def hash_password(self, password):
+        """Hash the password before storing it."""
+        from app import bcrypt
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verify the hashed password."""
+        from app import bcrypt
+        return bcrypt.check_password_hash(self.password, password)
 
     def to_dict(self):
         return {
@@ -29,24 +33,3 @@ class User(BaseModel):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
-
-
-    def hash_password(self, password):
-        """hashes the password before storage"""
-        from app import bcrypt
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
-
-
-    def verify_password(self, password):
-        """Verify that the password matches the hashed password"""
-        from app import bcrypt
-        return bcrypt.check_password_hash(self.password, password)
-
-
-    def update(self, data):
-        """Update user attributes"""
-        for key, value in data.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
-
-        self.save()
