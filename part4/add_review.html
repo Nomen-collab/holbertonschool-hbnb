@@ -1,46 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Review</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>HBNB - Add Review</title> <meta name="description" content="Add a new review for a place on HBNB. Share your experience."> <link rel="icon" type="image/png" href="images/icon.png"> <link rel="stylesheet" href="styles/style.css"> </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Hbnb" class="logo">
-    <a href="login.html" class="login-button">Login</a>
-  </header>
+    <header>
+        <div class="container"> <img src="images/logo.png" alt="HBNB Logo" class="logo"> <nav> <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="login.html" class="login-button">Login</a></li> </ul>
+            </nav>
+        </div>
+    </header>
 
-  <nav>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="login.html">Login</a></li>
-    </ul>
-  </nav>
+    <main>
+        <div class="container"> <div class="form-container"> <h2>Add a Review</h2>
 
-  <main>
-    <form id="review-form" class="add-review form">
-      <h2>Add a Review</h2>
+                <form id="review-form" class="add-review form">
+                    <label for="place-id">Place ID (for debugging/context):</label>
+                    <input type="text" id="place-id" name="place_id" value="[Place ID]" disabled>
+                    
+                    <label for="review-text">Your Review:</label>
+                    <textarea id="review-text" name="comment" rows="6" required></textarea> <label for="rating">Rating:</label>
+                    <select id="rating" name="rating" required>
+                        <option value="">Select a rating</option>
+                        <option value="1">1 - Awful</option>
+                        <option value="2">2 - Poor</option>
+                        <option value="3">3 - Average</option>
+                        <option value="4">4 - Good</option>
+                        <option value="5">5 - Excellent</option>
+                    </select>
 
-      <label for="review-text">Your Review:</label>
-      <textarea id="review-text" name="review-text" required></textarea>
+                    <button type="submit">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </main>
 
-      <label for="rating">Rating:</label>
-      <select id="rating" name="rating" required>
-        <option value="">Select a rating</option>
-        <option value="1">1 - Awful</option>
-        <option value="2">2 - Poor</option>
-        <option value="3">3 - Average</option>
-        <option value="4">4 - Good</option>
-        <option value="5">5 - Excellent</option>
-      </select>
-
-      <button type="submit">Submit Review</button>
-    </form>
-  </main>
-
-  <footer>Hbnb 2025 - all rights reserved.</footer>
-  <script src="scripts.js"></script>
+    <footer>
+        <div class="container"> <p>&copy; 2025 HBNB - All rights reserved.</p> </div>
+    </footer>
+    <script src="scripts.js"></script>
 </body>
 </html>

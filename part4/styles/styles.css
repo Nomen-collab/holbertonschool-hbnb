@@ -1,0 +1,346 @@
+/* * Fichier de style principal pour HBNB Part 4 - Design Task 0
+ * Basé sur le fichier SAMPLE et complété selon les exigences du projet.
+ */
+
+/* Réinitialisation de base et box-sizing */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* Vous pouvez changer la police ici si vous le souhaitez. Exemple: */
+    font-family: 'Arial', sans-serif; 
+    /* Ou pour une police Google Fonts (décommentez dans le HTML si vous l'utilisez) */
+    /* font-family: 'Roboto', sans-serif; */
+}
+
+/* Styles pour le corps de la page */
+body {
+    background-color: #f4f4f4; /* Couleur de fond légère */
+    color: #333; /* Couleur de texte principale */
+    line-height: 1.6; /* Améliore la lisibilité */
+    display: flex; /* Utilisation de flexbox pour positionner le footer en bas */
+    flex-direction: column;
+    min-height: 100vh; /* La page occupe au moins toute la hauteur de la vue */
+}
+
+/* Conteneur générique pour centrer le contenu */
+.container {
+    max-width: 1200px; /* Largeur maximale du contenu */
+    margin: 0 auto; /* Centre le conteneur horizontalement */
+    padding: 0 20px; /* Padding latéral pour éviter le contenu collé aux bords */
+}
+
+/* Styles de l'en-tête */
+header {
+    background-color: #2c3e50; /* Couleur de fond foncée pour le header */
+    color: #fff;
+    padding: 1rem 0; /* Padding vertical, le padding horizontal est géré par .container */
+    display: flex;
+    align-items: center; /* Alignement vertical des éléments dans le header */
+    justify-content: space-between; /* Espace entre le logo et la nav */
+    flex-wrap: wrap; /* Permet le retour à la ligne sur petits écrans */
+}
+
+header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%; /* S'assurer qu'il prend toute la largeur du header */
+}
+
+/* Styles du logo */
+.logo {
+    height: 50px; /* Hauteur fixe pour le logo */
+    width: auto; /* Largeur auto pour conserver les proportions */
+    margin-right: 20px; /* Espace à droite du logo */
+}
+
+/* Styles de la navigation */
+nav ul {
+    list-style: none; /* Supprime les puces de liste */
+    display: flex; /* Affiche les éléments de la nav en ligne */
+}
+
+nav li {
+    margin-left: 20px; /* Espace entre les éléments de la nav */
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 10px;
+    transition: background-color 0.3s ease; /* Transition douce au survol */
+}
+
+nav a:hover {
+    background-color: #34495e; /* Couleur de fond au survol */
+    border-radius: 5px;
+}
+
+/* Style spécifique pour le bouton/lien de connexion dans la nav */
+.login-button {
+    background-color: #e74c3c; /* Couleur attrayante pour le bouton de connexion */
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+
+.login-button:hover {
+    background-color: #c0392b; /* Assombrir au survol */
+}
+
+/* Styles du contenu principal */
+main {
+    flex-grow: 1; /* Permet au main de prendre l'espace disponible, poussant le footer vers le bas */
+    padding: 2rem 0; /* Padding vertical pour le main, padding horizontal géré par .container */
+}
+
+/* Styles des sections */
+section {
+    margin-bottom: 2rem; /* Espace entre les sections */
+}
+
+h1, h2, h3 {
+    color: #2c3e50; /* Couleur des titres */
+    margin-bottom: 1rem;
+}
+
+/* Styles pour la section de filtre */
+#filter {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+#filter label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+#filter select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+/* Styles des cartes (Place Card et Review Card) - Fixed Parameters */
+.place-card,
+.review-card {
+    margin: 20px; /* Marge externe */
+    padding: 10px; /* Padding interne */
+    border: 1px solid #ddd; /* Bordure */
+    border-radius: 10px; /* Rayon de bordure */
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Légère ombre pour un effet de profondeur */
+}
+
+/* Styles spécifiques aux Place Cards */
+.place-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start; /* Aligner les éléments au début */
+    margin-bottom: 20px; /* Espace entre les cartes */
+    min-height: 150px; /* Hauteur minimale pour la cohérence */
+}
+
+.place-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: #3498db; /* Couleur du titre de la carte */
+}
+
+.place-card .price-per-night {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #27ae60; /* Couleur du prix */
+    margin-bottom: 1rem;
+}
+
+.place-card .details-button {
+    background-color: #3498db; /* Couleur du bouton "View Details" */
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none; /* Pour les liens */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    align-self: flex-end; /* Aligner le bouton à droite */
+}
+
+.place-card .details-button:hover {
+    background-color: #2980b9;
+}
+
+/* Styles spécifiques aux Review Cards */
+.review-card {
+    margin-bottom: 15px; /* Espace entre les avis */
+}
+
+.review-card .review-comment {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.review-card .review-meta {
+    font-size: 0.9rem;
+    color: #777;
+    text-align: right;
+}
+
+/* Styles des conteneurs de formulaire */
+.form-container {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    max-width: 500px; /* Largeur maximale pour les formulaires */
+    margin: 2rem auto; /* Centre le formulaire et ajoute de la marge */
+}
+
+/* Styles des formulaires */
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.form input[type="email"],
+.form input[type="password"],
+.form input[type="text"],
+.form textarea,
+.form select {
+    padding: 10px;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 100%; /* Prend toute la largeur disponible */
+}
+
+.form textarea {
+    resize: vertical; /* Permet le redimensionnement vertical uniquement */
+    min-height: 80px;
+}
+
+.form button[type="submit"] {
+    background-color: #28a745; /* Couleur du bouton de soumission */
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    align-self: flex-end; /* Aligne le bouton à droite */
+    margin-top: 1rem; /* Espace au-dessus du bouton */
+}
+
+.form button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+/* Styles pour Place Details */
+.place-details .place-info {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.place-details h2 {
+    color: #3498db;
+    margin-bottom: 15px;
+}
+
+.place-details .price-per-night {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #27ae60;
+    margin-bottom: 1rem;
+}
+
+.place-details h3 {
+    color: #2c3e50;
+    margin-top: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.amenities-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.amenities-list li {
+    display: flex;
+    align-items: center;
+    background-color: #ecf0f1;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.amenities-list img {
+    height: 20px; /* Taille des icônes d'amenities */
+    width: auto;
+    margin-right: 8px;
+}
+
+/* Styles du pied de page */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: auto; /* Pousse le footer vers le bas de la page */
+}
+
+footer p {
+    font-size: 0.9rem;
+}
+
+/* Styles Responsifs de base (peut nécessiter plus de détails) */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav ul {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    nav li {
+        margin: 5px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .place-card .details-button {
+        align-self: center; /* Centrer le bouton sur mobile */
+        width: 80%; /* Le rendre plus large */
+    }
+
+    .form-container {
+        margin: 1rem; /* Moins de marge sur les petits écrans */
+        padding: 1.5rem;
+    }
+}
