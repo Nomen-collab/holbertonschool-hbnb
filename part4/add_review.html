@@ -3,25 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>HBNB - Add Review</title> <meta name="description" content="Add a new review for a place on HBNB. Share your experience."> <link rel="icon" type="image/png" href="images/icon.png"> <link rel="stylesheet" href="styles/style.css"> </head>
+    <title>HBNB - Add Review</title>
+    <meta name="description" content="Add a new review for a place on HBNB. Share your experience.">
+    <link rel="icon" type="image/png" href="images/icon.png">
+    <link rel="stylesheet" href="styles/style.css">
+</head>
 <body>
     <header>
-        <div class="container"> <img src="images/logo.png" alt="HBNB Logo" class="logo"> <nav> <ul>
+        <div class="container">
+            <img src="images/logo.png" alt="HBNB Logo" class="logo">
+            <nav>
+                <ul>
                     <li><a href="index.html">Home</a></li>
-                    <li><a href="login.html" class="login-button">Login</a></li> </ul>
+                    <li><a href="login.html" class="login-button" id="login-link">Login</a></li> </ul>
             </nav>
         </div>
     </header>
 
     <main>
-        <div class="container"> <div class="form-container"> <h2>Add a Review</h2>
+        <div class="container">
+            <div class="form-container">
+                <h2>Add a Review</h2>
 
                 <form id="review-form" class="add-review form">
-                    <label for="place-id">Place ID (for debugging/context):</label>
-                    <input type="text" id="place-id" name="place_id" value="[Place ID]" disabled>
-                    
-                    <label for="review-text">Your Review:</label>
-                    <textarea id="review-text" name="comment" rows="6" required></textarea> <label for="rating">Rating:</label>
+                    <label for="place-id-display">Place ID:</label>
+                    <input type="text" id="place-id-display" name="place_id_display" value="" disabled>
+                    <input type="hidden" id="place-id-hidden" name="place_id"> <label for="comment">Your Review:</label> <textarea id="comment" name="comment" rows="6" required></textarea>
+
+                    <label for="rating">Rating:</label>
                     <select id="rating" name="rating" required>
                         <option value="">Select a rating</option>
                         <option value="1">1 - Awful</option>
@@ -38,7 +47,9 @@
     </main>
 
     <footer>
-        <div class="container"> <p>&copy; 2025 HBNB - All rights reserved.</p> </div>
+        <div class="container">
+            <p>&copy; 2025 HBNB - All rights reserved.</p>
+        </div>
     </footer>
     <script src="scripts.js"></script>
 </body>

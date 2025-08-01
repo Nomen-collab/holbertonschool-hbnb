@@ -7,8 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // New elements for place.html
     const placeDetailsSection = document.getElementById('place-details');
-    const addReviewSection = document.getElementById('add-review');
-    const reviewForm = document.getElementById('review-form');
+    const addReviewSectionOnPlacePage = document.getElementById('add-review'); // Renommé pour éviter conflit avec add_review.html
+    const reviewFormOnPlacePage = document.getElementById('review-form'); // Renommé pour éviter conflit
+
+    // New elements for add_review.html
+    const addReviewFormPage = document.getElementById('review-form'); // Le formulaire principal sur add_review.html
+    const placeIdDisplayInput = document.getElementById('place-id-display');
+    const placeIdHiddenInput = document.getElementById('place-id-hidden');
+
 
     // API Endpoints
     const API_BASE_URL = 'http://127.0.0.1:5000/api/v1';
@@ -37,26 +43,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to update login/logout link visibility
     function updateLoginLink() {
-        if (loginLink) { // Check if the element exists (i.e., we are on index.html or login.html or place.html)
+        if (loginLink) {
             if (isLoggedIn()) {
                 loginLink.textContent = 'Logout';
-                loginLink.href = '#'; // Change to a hash or prevent default to handle logout via JS
-                loginLink.removeEventListener('click', handleLogout); // Remove previous listener to avoid duplicates
-                loginLink.addEventListener('click', handleLogout); // Add listener for logout
+                loginLink.href = '#';
+                loginLink.removeEventListener('click', handleLogout);
+                loginLink.addEventListener('click', handleLogout);
             } else {
                 loginLink.textContent = 'Login';
                 loginLink.href = 'login.html';
-                loginLink.removeEventListener('click', handleLogout); // Remove listener if not logged in
+                loginLink.removeEventListener('click', handleLogout);
             }
         }
     }
 
     // Function to handle logout
     function handleLogout(event) {
-        event.preventDefault(); // Prevent navigation
-        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;'; // Delete the token cookie
+        event.preventDefault();
+        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
         alert('You have been logged out.');
-        window.location.href = 'index.html'; // Redirect to home page
+        window.location.href = 'index.html';
     }
 
     // --- Logic for login.html ---
@@ -78,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    document.cookie = `token=${data.access_token}; path=/;`; // Consider adding secure and samesite=Lax for production
+                    document.cookie = `token=${data.access_token}; path=/;`;
                     window.location.href = 'index.html';
                 } else {
                     let errorMessage = 'Login failed. Please try again.';
@@ -104,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Logic for index.html - Fetch and display places ---
     if (placesListSection) {
         const priceFilter = document.getElementById('price-filter');
-        let currentPlaces = []; // To store all fetched places
+        let currentPlaces = [];
 
         async function fetchPlaces() {
             try {
@@ -139,7 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const placeCard = document.createElement('article');
                 placeCard.classList.add('place-card');
                 placeCard.innerHTML = `
-                    <h3>${place.name}</h3> <p class="price-per-night">$${place.price_by_night} / night</p>
+                    <h3>${place.name}</h3>
+                    <p class="price-per-night">$${place.price_by_night} / night</p>
                     <p>${place.description || 'No description available.'}</p>
                     <a href="place.html?id=${place.id}" class="details-button">View Details</a>
                 `;
@@ -162,32 +169,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Logic for place.html - Display place details and add review form ---
-    if (placeDetailsSection) { // Check if we are on the place.html page
+    if (placeDetailsSection) {
         const placeId = getPlaceIdFromURL();
 
         if (!placeId) {
             placeDetailsSection.innerHTML = '<h2>Error: Place ID not found in URL.</h2>';
-            if (addReviewSection) addReviewSection.style.display = 'none'; // Hide review form if no place
+            if (addReviewSectionOnPlacePage) addReviewSectionOnPlacePage.style.display = 'none';
             return;
         }
 
-        // Fetch and display place details on page load
         fetchPlaceDetails(placeId);
 
-        // Manage add review form visibility and submission
-        if (addReviewSection) {
+        if (addReviewSectionOnPlacePage) {
             if (isLoggedIn()) {
-                addReviewSection.style.display = 'block';
-                if (reviewForm) {
-                    reviewForm.addEventListener('submit', async (event) => {
+                addReviewSectionOnPlacePage.style.display = 'block';
+                if (reviewFormOnPlacePage) {
+                    reviewFormOnPlacePage.addEventListener('submit', async (event) => {
                         event.preventDefault();
+                        // Changed IDs here to match new add_review.html structure for consistency
                         const rating = document.getElementById('rating').value;
-                        const comment = document.getElementById('comment').value;
+                        const comment = document.getElementById('comment').value; // Changed from review-text
                         await submitReview(placeId, rating, comment);
                     });
                 }
             } else {
-                addReviewSection.style.display = 'none';
+                addReviewSectionOnPlacePage.style.display = 'none';
             }
         }
     }
@@ -195,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to extract place ID from URL query parameters
     function getPlaceIdFromURL() {
         const params = new URLSearchParams(window.location.search);
-        return params.get('id'); // Assumes the ID parameter is named 'id'
+        return params.get('id');
     }
 
     // Function to fetch place details from the API
@@ -205,9 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    // No Authorization header needed if place details are public
-                    // If your API requires it, uncomment and add:
-                    // 'Authorization': `Bearer ${getJwtToken()}`
+                    // 'Authorization': `Bearer ${getJwtToken()}` // Uncomment if place details require auth
                 }
             });
 
@@ -228,10 +232,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayPlaceDetails(place) {
         if (!placeDetailsSection) return;
 
-        placeDetailsSection.innerHTML = ''; // Clear previous content
+        placeDetailsSection.innerHTML = '';
 
         const placeInfoDiv = document.createElement('div');
-        placeInfoDiv.classList.add('place-info'); // Use your existing style for place details
+        placeInfoDiv.classList.add('place-info');
 
         placeInfoDiv.innerHTML = `
             <h2>${place.name}</h2>
@@ -243,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         placeDetailsSection.appendChild(placeInfoDiv);
 
-        // Display Amenities
         if (place.amenities && place.amenities.length > 0) {
             const amenitiesTitle = document.createElement('h3');
             amenitiesTitle.textContent = 'Amenities';
@@ -253,11 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
             amenitiesList.classList.add('amenities-list');
             place.amenities.forEach(amenity => {
                 const amenityItem = document.createElement('li');
-                // Assuming you have images for amenities, e.g., images/icon_wifi.png
-                // You might need to map amenity.name to specific image filenames
-                // For now, let's just display the name. If you have icons, adjust this.
-                // amenityItem.innerHTML = `<img src="images/icon_${amenity.name.toLowerCase()}.png" alt="${amenity.name}"> ${amenity.name}`;
-                amenityItem.textContent = amenity.name; // Simpler text-only display
+                amenityItem.textContent = amenity.name;
                 amenitiesList.appendChild(amenityItem);
             });
             placeDetailsSection.appendChild(amenitiesList);
@@ -267,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
             placeDetailsSection.appendChild(noAmenities);
         }
 
-        // Display Reviews
         const reviewsTitle = document.createElement('h3');
         reviewsTitle.textContent = 'Reviews';
         placeDetailsSection.appendChild(reviewsTitle);
@@ -289,13 +287,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to submit a new review
+    // Function to submit a new review (used by both place.html and add_review.html)
     async function submitReview(placeId, rating, comment) {
         const token = getJwtToken();
         if (!token) {
             alert('You must be logged in to submit a review.');
-            window.location.href = 'login.html'; // Redirect to login
-            return;
+            window.location.href = 'login.html';
+            return false; // Indicate failure
         }
 
         try {
@@ -303,26 +301,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Include JWT token for authentication
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ rating: parseInt(rating), comment: comment })
             });
 
             if (response.ok) {
                 alert('Review submitted successfully!');
-                // Optionally, clear the form and refresh reviews
-                if (reviewForm) {
-                    reviewForm.reset(); // Clear the form
-                }
-                fetchPlaceDetails(placeId); // Re-fetch place details to show the new review
+                return true; // Indicate success
             } else {
                 const errorData = await response.json();
                 alert(`Failed to submit review: ${errorData.message || response.statusText}`);
+                return false; // Indicate failure
             }
         } catch (error) {
             console.error('Error submitting review:', error);
             alert('An error occurred while submitting your review. Please try again.');
+            return false; // Indicate failure
         }
+    }
+
+    // --- Logic for add_review.html - Specific logic for adding a review on a dedicated page ---
+    if (addReviewFormPage) { // Check if we are on the add_review.html page by checking for the form
+        const token = getJwtToken();
+        const placeId = getPlaceIdFromURL();
+
+        // 1. Check User Authentication & Redirect
+        if (!token) {
+            alert('You must be logged in to add a review. Redirecting to home page.');
+            window.location.href = 'index.html'; // Redirect if not authenticated
+            return; // Stop further execution on this page
+        }
+
+        // 2. Get Place ID from URL (already handled by getPlaceIdFromURL)
+        if (!placeId) {
+            alert('Error: Place ID not found in URL. Redirecting to home page.');
+            window.location.href = 'index.html'; // Redirect if no place ID
+            return;
+        }
+
+        // Display the place ID in the disabled input field and set it in the hidden input
+        if (placeIdDisplayInput) {
+            placeIdDisplayInput.value = placeId;
+        }
+        if (placeIdHiddenInput) {
+            placeIdHiddenInput.value = placeId;
+        }
+
+        // 3. Setup Event Listener for Review Form
+        addReviewFormPage.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Get review text and rating from form
+            const rating = document.getElementById('rating').value;
+            const comment = document.getElementById('comment').value; // Changed from review-text
+
+            // Validate inputs (optional but good practice)
+            if (!rating || !comment) {
+                alert('Please provide both a rating and a comment.');
+                return;
+            }
+            if (parseInt(rating) < 1 || parseInt(rating) > 5) {
+                alert('Rating must be between 1 and 5.');
+                return;
+            }
+
+            // 4. Make AJAX Request to Submit Review & Handle API Response
+            const success = await submitReview(placeId, rating, comment);
+
+            if (success) {
+                // Clear the form
+                addReviewFormPage.reset();
+                // Optionally, redirect back to place details page or index page
+                alert('Review submitted. Redirecting to place details page.');
+                window.location.href = `place.html?id=${placeId}`;
+            }
+            // Error handling is inside submitReview function already
+        });
     }
 
     // Initialize the login/logout link status when any page loads
