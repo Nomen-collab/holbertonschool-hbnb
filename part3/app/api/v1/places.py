@@ -24,14 +24,14 @@ user_model = api.model('PlaceUser', {
 place_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
-    'number_rooms': fields.Integer(required=True, description='Number of rooms', min=1), # Ajouté
-    'number_bathrooms': fields.Integer(required=True, description='Number of bathrooms', min=0), # Ajouté
-    'max_guests': fields.Integer(required=True, description='Maximum number of guests', min=1), # Ajouté
-    'price_by_night': fields.Float(required=True, description='Price per night', min=0), # Ajouté
-    'latitude': fields.Float(description='Latitude of the place', min=-90, max=90), # Rendu optionnel pour l'entrée si non requis
-    'longitude': fields.Float(description='Longitude of the place', min=-180, max=180), # Rendu optionnel pour l'entrée si non requis
+    'number_rooms': fields.Integer(required=True, description='Number of rooms', min=1),
+    'number_bathrooms': fields.Integer(required=True, description='Number of bathrooms', min=0),
+    'max_guests': fields.Integer(required=True, description='Maximum number of guests', min=1),
+    'price_by_night': fields.Float(required=True, description='Price per night', min=0),
+    'latitude': fields.Float(description='Latitude of the place', min=-90, max=90),
+    'longitude': fields.Float(description='Longitude of the place', min=-180, max=180),
     # owner_id ne devrait PAS être dans le modèle d'entrée pour POST (il est déduit du JWT)
-    'amenity_ids': fields.List(fields.String, description="List of amenity ID's to associate with the place") # Renommé pour clarté
+    'amenity_ids': fields.List(fields.String, description="List of amenity ID's to associate with the place")
 })
 
 # Modèle pour la sortie d'un Place (avec les objets imbriqués)
@@ -45,19 +45,19 @@ place_output_model = api.model('PlaceOutput', {
     'price_by_night': fields.Float(description='Price per night'),
     'latitude': fields.Float(description='Latitude of the place'),
     'longitude': fields.Float(description='Longitude of the place'),
-    'owner': fields.Nested(user_model, description='Owner details'), # Imbrique le modèle utilisateur
-    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'), # Imbrique la liste des aménités
-    'reviews': fields.List(fields.String, description='List of review IDs for the place') # Ou un modèle de review simple
+    'owner': fields.Nested(user_model, description='Owner details'),
+    'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
+    'reviews': fields.List(fields.String, description='List of review IDs for the place')
 })
 
-
-@api.route('/')
+# CORRECTION APPLIQUÉE ICI : @api.route('') au lieu de @api.route('/')
+@api.route('')
 class PlaceList(Resource):
     @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
     @jwt_required()
-    @api.doc(security='Bearer Auth') # Ajout de security='Bearer Auth'
+    @api.doc(security='Bearer Auth')
     def post(self):
         """Register a new place"""
         try:
@@ -72,9 +72,9 @@ class PlaceList(Resource):
 
             return new_place.to_dict(), 201
         except Exception as e:
-            api.abort(400, str(e)) # Utilisation de api.abort
+            api.abort(400, str(e))
 
-    @api.response(200, 'List of places retrieved successfully', model=place_output_model) # Spécifie le modèle de sortie
+    @api.response(200, 'List of places retrieved successfully', model=place_output_model)
     def get(self):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
@@ -83,15 +83,15 @@ class PlaceList(Resource):
         # Si to_dict() ne le fait pas, vous devrez construire la réponse ici.
         return [place.to_dict() for place in places], 200
 
-@api.route('/<string:place_id>') # Spécifiez le type
+@api.route('/<string:place_id>')
 class PlaceResource(Resource):
-    @api.response(200, 'Place details retrieved successfully', model=place_output_model) # Spécifie le modèle de sortie
+    @api.response(200, 'Place details retrieved successfully', model=place_output_model)
     @api.response(404, 'Place not found')
     def get(self, place_id):
         """Get place details by ID"""
         place = facade.get_place(place_id)
         if not place:
-            api.abort(404, 'Place not found') # Utilisation de api.abort
+            api.abort(404, 'Place not found')
 
         return place.to_dict(), 200
 
@@ -99,9 +99,9 @@ class PlaceResource(Resource):
     @api.response(200, 'Place updated successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
-    @api.response(403, 'Unauthorized - not the owner or admin') # Message mis à jour
+    @api.response(403, 'Unauthorized - not the owner or admin')
     @jwt_required()
-    @api.doc(security='Bearer Auth') # Ajout de security='Bearer Auth'
+    @api.doc(security='Bearer Auth')
     def put(self, place_id):
         """Update a place's information"""
         current_user_id = get_jwt_identity()
@@ -123,11 +123,11 @@ class PlaceResource(Resource):
         except Exception as e:
             api.abort(400, str(e))
 
-    @api.response(204, 'Place deleted successfully') # 204 No Content
+    @api.response(204, 'Place deleted successfully')
     @api.response(404, 'Place not found')
     @api.response(403, 'Unauthorized - not the owner or admin')
     @jwt_required()
-    @api.doc(security='Bearer Auth') # Ajout de security='Bearer Auth'
+    @api.doc(security='Bearer Auth')
     def delete(self, place_id):
         """Delete a place"""
         current_user_id = get_jwt_identity()
