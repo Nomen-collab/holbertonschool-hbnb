@@ -1,5 +1,7 @@
 from app import db
 from app.models.base_model import BaseModel
+from sqlalchemy.orm import relationship # Ajoutez cet import
+from app.models.place_amenities import place_amenities # <--- AJOUTEZ CETTE LIGNE
 
 class Place(BaseModel):
     #Name of the table in the DB
@@ -16,7 +18,7 @@ class Place(BaseModel):
 
     # Relations
     reviews = db.relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
-    amenities = db.relationship('Amenity', secondary='place_amenities', back_populates='places')
+    amenities = db.relationship('Amenity', secondary=place_amenities, back_populates='places') # <--- Utilisez la variable directement ici
 
     def __repr__(self):
         return f"<Place {self.title}>"

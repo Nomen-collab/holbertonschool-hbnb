@@ -15,10 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('password').value;
 
             // Define your API base URL
-            // IMPORTANT: Replace with the actual URL of your backend API
-            // Example: const API_BASE_URL = 'http://127.0.0.1:5000/api/v1';
-            // Or if you have a specific login endpoint path:
-            const API_LOGIN_ENDPOINT = 'http://127.0.0.1:5000/api/v1/login'; // Adjust this to your actual API login endpoint
+            // IMPORTANT: The corrected URL to match your Flask API's /api/v1/auth/login endpoint
+            const API_LOGIN_ENDPOINT = 'http://127.0.0.1:5000/api/v1/auth/login'; // <--- CORRECTION APPLIQUÉE ICI
 
             try {
                 // Make the AJAX request to the login endpoint
@@ -54,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (errorData.message) {
                             errorMessage = errorData.message;
                         } else if (response.statusText) {
-                             errorMessage = `Login failed: ${response.statusText}`;
+                            errorMessage = `Login failed: ${response.statusText}`;
                         }
                     } catch (e) {
                         // If response is not JSON, use status text
