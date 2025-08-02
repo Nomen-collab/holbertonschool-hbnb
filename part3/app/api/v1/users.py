@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt, verify_jwt_in_request # Ajout de verify_jwt_in_request
 
 # Modifié : Ajout de cors_origins='*' pour gérer les requêtes OPTIONS
 api = Namespace('users', description='User operations', cors_origins='*')
@@ -32,17 +32,55 @@ class UserList(Resource):
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered or Invalid input data') # Message unifié
     @api.response(403, 'Admin privileges required')
-    @jwt_required()
-    # Ajout de security='Bearer Auth' pour lier cette route à la définition de sécurité globale
-    @api.doc(security='Bearer Auth')
+    # @jwt_required()  <--- TOUJOURS ABSENT ICI, C'EST CORRECT
+    @api.doc(security='Bearer Auth') # Ceci reste pour la documentation Swagger, mais ne force plus l'auth ici.
     def post(self):
-        """Register a new user - ADMIN ONLY (temporairement modifié pour le 1er admin)"""
-        # Vérification Admin - A COMMENTER TEMPORAIREMENT POUR LE 1ER ADMIN
-        claims = get_jwt()
-        if not claims.get('is_admin'):
-            api.abort(403, 'Admin privileges required')
-
+        """Register a new user (admin check is handled internally if needed for subsequent users)"""
         user_data = api.payload
+
+        is_request_admin = user_data.get('is_admin', False)
+        current_user_is_admin = False
+
+        # Tente de vérifier si un jeton est présent et valide de manière optionnelle.
+        # Cela permet d'appeler get_jwt() sans lever de RuntimeError si aucun jeton n'est présent.
+        try:
+            verify_jwt_in_request(optional=True)
+            claims = get_jwt()
+            current_user_is_admin = claims.get('is_admin', False)
+        except RuntimeError:
+            # Cette exception ne devrait plus se produire grâce à optional=True,
+            # mais elle est gardée comme précaution.
+            current_user_is_admin = False
+        except Exception as e:
+            # Gérer d'autres exceptions potentielles de JWT ici si nécessaire
+            print(f"Erreur lors de la vérification JWT optionnelle: {e}")
+            current_user_is_admin = False
+
+
+        # Logique pour la création d'un utilisateur admin :
+        # 1. Si la requête tente de créer un admin (is_admin=True)
+        # 2. Et que l'utilisateur actuel (celui qui fait la requête) n'est PAS un admin
+        # 3. Alors, on vérifie si la base de données est vide.
+        #    Si elle est vide, on permet la création du premier admin.
+        #    Si elle n'est pas vide, on refuse (car seuls les admins peuvent créer d'autres admins).
+        
+        # Obtenir la liste de tous les utilisateurs pour vérifier si la DB est vide
+        all_users = facade.get_all_users()
+
+        if is_request_admin and not current_user_is_admin:
+            if len(all_users) == 0:
+                # Permettre la création du premier admin si la DB est vide et qu'il n'y a pas de token admin.
+                # L'utilisateur doit s'enregistrer avec 'is_admin': true.
+                pass
+            else:
+                # La DB n'est pas vide, et l'utilisateur n'est pas admin, donc il ne peut pas créer un admin.
+                api.abort(403, 'Admin privileges required to set a user as admin or create subsequent admin users.')
+        elif is_request_admin and current_user_is_admin:
+            # Un admin existant crée un nouvel admin, c'est autorisé.
+            pass
+        # else:
+            # Si is_request_admin est False (création d'un utilisateur normal), ou si current_user_is_admin est True
+            # (admin crée n'importe qui), la logique continue.
 
         # Vérification de l'unicité de l'email
         existing_user = facade.get_user_by_email(user_data['email'])

@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from app.services import facade
+from app.services.facade import HBnBFacade # Importez directement HBnBFacade
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 # Modifié : Ajout de cors_origins='*'
@@ -20,8 +20,8 @@ user_model = api.model('PlaceUser', {
 })
 
 # Define the place model for input validation and documentation
-# Note: amenities ici est une liste de IDs pour l'entrée
-place_model = api.model('Place', {
+# Le modèle d'entrée doit contenir tous les champs que le client envoie
+place_input_model = api.model('PlaceInput', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'number_rooms': fields.Integer(required=True, description='Number of rooms', min=1),
@@ -30,8 +30,8 @@ place_model = api.model('Place', {
     'price_by_night': fields.Float(required=True, description='Price per night', min=0),
     'latitude': fields.Float(description='Latitude of the place', min=-90, max=90),
     'longitude': fields.Float(description='Longitude of the place', min=-180, max=180),
-    # owner_id ne devrait PAS être dans le modèle d'entrée pour POST (il est déduit du JWT)
-    'amenity_ids': fields.List(fields.String, description="List of amenity ID's to associate with the place")
+    # owner_id ne doit PAS être dans l'input_model car il est déduit du JWT
+    'amenity_ids': fields.List(fields.String, description="List of amenity ID's to associate with the place", required=False) # Rendu optionnel
 })
 
 # Modèle pour la sortie d'un Place (avec les objets imbriqués)
@@ -45,16 +45,21 @@ place_output_model = api.model('PlaceOutput', {
     'price_by_night': fields.Float(description='Price per night'),
     'latitude': fields.Float(description='Latitude of the place'),
     'longitude': fields.Float(description='Longitude of the place'),
-    'owner': fields.Nested(user_model, description='Owner details'),
+    'owner_id': fields.String(description='ID du propriétaire (pour la simplicité)'), # Change to owner_id
     'amenities': fields.List(fields.Nested(amenity_model), description='List of amenities'),
-    'reviews': fields.List(fields.String, description='List of review IDs for the place')
+    'reviews': fields.List(fields.String, description='List of review IDs for the place'), # Assuming review IDs for now
+    'created_at': fields.DateTime(dt_format='iso8601'),
+    'updated_at': fields.DateTime(dt_format='iso8601')
 })
 
-# CORRECTION APPLIQUÉE ICI : @api.route('') au lieu de @api.route('/')
-@api.route('')
+
+# Initialisation de la façade
+facade = HBnBFacade()
+
+@api.route('') # C'est la route correcte pour une création sans ID dans l'URL
 class PlaceList(Resource):
-    @api.expect(place_model)
-    @api.response(201, 'Place successfully created')
+    @api.expect(place_input_model) # Utilisez place_input_model ici
+    @api.response(201, 'Place successfully created', model=place_output_model) # Spécifiez le modèle de sortie
     @api.response(400, 'Invalid input data')
     @jwt_required()
     @api.doc(security='Bearer Auth')
@@ -63,27 +68,64 @@ class PlaceList(Resource):
         try:
             current_user_id = get_jwt_identity()
             place_data = api.payload
-            place_data['owner_id'] = current_user_id # Set the owner_id from JWT (security)
+            
+            # Ajoutez l'user_id extrait du JWT au payload pour la façade
+            # Le 'owner_id' est géré dans la façade si non explicitement fourni
+            place_data['user_id'] = current_user_id 
+            
+            # Appelez la méthode de la façade avec UN SEUL argument (place_data)
+            new_place = facade.create_place(place_data)
 
-            # Extraire les IDs d'amenities si fournis
-            amenity_ids = place_data.pop('amenity_ids', []) # Remove from place_data, use separately
-
-            new_place = facade.create_place(place_data, amenity_ids) # Passer amenity_ids à facade
-
+            # Il faut s'assurer que .to_dict() du modèle Place renvoie toutes les données
+            # attendues par place_output_model, y compris les relations chargées
+            # (amenities, reviews, et owner).
+            # Sinon, vous devrez construire le dictionnaire de sortie ici.
             return new_place.to_dict(), 201
-        except Exception as e:
-            api.abort(400, str(e))
 
-    @api.response(200, 'List of places retrieved successfully', model=place_output_model)
+        except ValueError as e: # Capture les erreurs de validation spécifiques de la façade
+            api.abort(400, str(e))
+        except Exception as e:
+            api.abort(500, f"An unexpected error occurred: {str(e)}")
+
+
+    @api.response(200, 'List of places retrieved successfully', model=api.model('PlaceListOutput', {
+        'places': fields.List(fields.Nested(place_output_model), description='List of places')
+    }))
     def get(self):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
-        # Assurez-vous que place.to_dict() retourne aussi owner et amenities sous forme d'objets ou IDs
-        # selon ce que place_output_model attend.
-        # Si to_dict() ne le fait pas, vous devrez construire la réponse ici.
-        return [place.to_dict() for place in places], 200
+        
+        # Pour le GET, il faut aussi charger les relations si elles doivent apparaître dans le to_dict()
+        # Ou modifier to_dict() pour qu'il ne charge que les IDs si c'est ce que place_output_model attend pour les relations.
+        # Pour une sortie complète, assurez-vous que les relations sont chargées (e.g., lazy='joined' dans le modèle)
+        # ou chargez-les explicitement ici (ex: place_repo.get_all_with_relations()).
+
+        # Pour le moment, to_dict() dans Place ne retourne pas owner ni amenities.
+        # Il faudra l'adapter pour correspondre à place_output_model.
+        # Voici un exemple si vous voulez construire la sortie ici :
+        output_places = []
+        for place in places:
+            place_dict = place.to_dict()
+            
+            # Récupérer l'objet propriétaire
+            owner = facade.get_user(place.owner_id)
+            if owner:
+                place_dict['owner'] = owner.to_dict() # Assurez-vous que user.to_dict() existe
+            else:
+                place_dict['owner'] = None # Ou une valeur par défaut
+
+            # Récupérer les agréments associés
+            place_dict['amenities'] = [amenity.to_dict() for amenity in place.amenities] # Assurez-vous que amenity.to_dict() existe
+            
+            # Récupérer les reviews (ici on suppose juste les IDs, comme dans votre modèle de sortie)
+            place_dict['reviews'] = [review.id for review in place.reviews] # Assurez-vous que review.id est accessible
+            
+            output_places.append(place_dict)
+            
+        return {'places': output_places}, 200
 
 @api.route('/<string:place_id>')
+@api.param('place_id', 'L\'identifiant unique du lieu')
 class PlaceResource(Resource):
     @api.response(200, 'Place details retrieved successfully', model=place_output_model)
     @api.response(404, 'Place not found')
@@ -93,10 +135,21 @@ class PlaceResource(Resource):
         if not place:
             api.abort(404, 'Place not found')
 
-        return place.to_dict(), 200
+        # Adaptez la sortie pour qu'elle corresponde à place_output_model
+        place_dict = place.to_dict()
+        owner = facade.get_user(place.owner_id)
+        if owner:
+            place_dict['owner'] = owner.to_dict()
+        else:
+            place_dict['owner'] = None
 
-    @api.expect(place_model)
-    @api.response(200, 'Place updated successfully')
+        place_dict['amenities'] = [amenity.to_dict() for amenity in place.amenities]
+        place_dict['reviews'] = [review.id for review in place.reviews]
+
+        return place_dict, 200
+
+    @api.expect(place_input_model) # Utilisez place_input_model pour l'entrée PUT
+    @api.response(200, 'Place updated successfully', model=place_output_model)
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
     @api.response(403, 'Unauthorized - not the owner or admin')
@@ -115,13 +168,25 @@ class PlaceResource(Resource):
             api.abort(403, 'Unauthorized - you can only modify your own places (or be admin)')
 
         place_data = api.payload
-        amenity_ids = place_data.pop('amenity_ids', None) # Extraire amenities IDs si présents pour la mise à jour
-
+        # La facade gère maintenant amenity_ids à l'intérieur de place_data
         try:
-            updated_place = facade.update_place(place_id, place_data, amenity_ids) # Passer amenity_ids
-            return updated_place.to_dict(), 200
-        except Exception as e:
+            updated_place = facade.update_place(place_id, place_data)
+            
+            # Adaptez la sortie pour qu'elle corresponde à place_output_model
+            updated_place_dict = updated_place.to_dict()
+            owner = facade.get_user(updated_place.owner_id)
+            if owner:
+                updated_place_dict['owner'] = owner.to_dict()
+            else:
+                updated_place_dict['owner'] = None
+            updated_place_dict['amenities'] = [amenity.to_dict() for amenity in updated_place.amenities]
+            updated_place_dict['reviews'] = [review.id for review in updated_place.reviews]
+
+            return updated_place_dict, 200
+        except ValueError as e:
             api.abort(400, str(e))
+        except Exception as e:
+            api.abort(500, f"An unexpected error occurred: {str(e)}")
 
     @api.response(204, 'Place deleted successfully')
     @api.response(404, 'Place not found')
